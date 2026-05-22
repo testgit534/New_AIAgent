@@ -1,0 +1,1146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Loom QA Copilot</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background:
+          radial-gradient(
+            circle at top left,
+            rgba(59, 91, 219, 0.15),
+            transparent 30%
+          ),
+          radial-gradient(
+            circle at top right,
+            rgba(76, 110, 245, 0.12),
+            transparent 30%
+          ),
+          #0f1117;
+        color: #e2e8f0;
+        min-height: 100vh;
+        padding: 24px 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 0 40px;
+        flex: 1;
+      }
+
+      h1 {
+        font-size: 48px;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 10px;
+        text-align: center;
+      }
+
+      .subtitle {
+        font-size: 17px;
+        color: #94a3b8;
+        margin-bottom: 22px;
+        line-height: 1.6;
+        max-width: 1000px;
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .badges {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .badges span {
+        background: #161824;
+        border: 1px solid #2d3148;
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 12px;
+        color: #a5b4fc;
+      }
+
+      .card {
+        background: rgba(30, 33, 48, 0.75);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 18px 28px 28px 28px;
+        margin-bottom: 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+      }
+
+      .card label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: #94a3b8;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .task-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        margin-top: 18px;
+        margin-bottom: 24px;
+      }
+
+      .task-card {
+        background: #161824;
+        border: 1px solid #2d3148;
+        border-radius: 14px;
+        font-size: 20px;
+        padding: 20px;
+        cursor: pointer;
+        transition: all 0.25s ease;
+      }
+
+      .task-card:hover {
+        border-color: #4c6ef5;
+        transform: translateY(-2px);
+      }
+
+      .task-card.active {
+        background: linear-gradient(135deg, #3b5bdb, #4c6ef5);
+        border-color: #4c6ef5;
+      }
+
+      .task-card h3 {
+        font-size: 16px;
+        margin-bottom: 8px;
+        color: white;
+      }
+
+      .task-card p {
+        font-size: 13px;
+        color: #cbd5e1;
+        line-height: 1.5;
+      }
+
+      .tab-btn {
+        flex: 1;
+        padding: 13px;
+        border-radius: 10px;
+        border: 1px solid #2d3148;
+        background: #161824;
+        color: #64748b;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.25s ease;
+      }
+
+      .tab-btn.active {
+        background: linear-gradient(135deg, #3b5bdb, #4c6ef5);
+        border-color: #4c6ef5;
+        color: #ffffff;
+      }
+
+      .tab-btn:hover:not(.active) {
+        border-color: #4c6ef5;
+        color: #a5b4fc;
+      }
+
+      input[type="text"],
+      input[type="number"],
+      textarea,
+      select {
+        width: 100%;
+        background: rgba(22, 24, 36, 0.95);
+        border: 1px solid #2d3148;
+        border-radius: 10px;
+        padding: 13px 15px;
+        color: #e2e8f0;
+        font-size: 14px;
+        outline: none;
+        transition: all 0.2s ease;
+        font-family: inherit;
+      }
+
+      input:focus,
+      textarea:focus {
+        border-color: #4c6ef5;
+        box-shadow: 0 0 0 3px rgba(76, 110, 245, 0.15);
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 120px;
+        line-height: 1.6;
+      }
+
+      .field-gap {
+        margin-bottom: 18px;
+      }
+
+      .input-section {
+        display: none;
+      }
+
+      .input-section.active {
+        display: block;
+      }
+
+      .generate-btn {
+        width: 100%;
+        padding: 18px;
+        background: linear-gradient(135deg, #4c6ef5, #7c3aed);
+        color: #ffffff;
+        border: none;
+        border-radius: 14px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 12px;
+        position: relative;
+        overflow: hidden;
+        box-shadow:
+          0 10px 30px rgba(76, 110, 245, 0.35),
+          0 0 40px rgba(124, 58, 237, 0.15);
+      }
+
+      .generate-btn:hover {
+        transform: translateY(-3px) scale(1.01);
+
+        box-shadow:
+          0 18px 40px rgba(76, 110, 245, 0.45),
+          0 0 60px rgba(124, 58, 237, 0.25);
+      }
+
+      .generate-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .status {
+        text-align: center;
+        font-size: 13px;
+        margin-top: 14px;
+        min-height: 20px;
+        color: #94a3b8;
+      }
+
+      .status.loading {
+        color: #a5b4fc;
+      }
+
+      .status.error {
+        color: #f87171;
+      }
+
+      .results {
+        display: none;
+      }
+
+      .results.visible {
+        display: block;
+      }
+
+      .result-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+
+      .result-tab {
+        padding: 9px 18px;
+        border-radius: 8px;
+        border: 1px solid #2d3148;
+        background: #161824;
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.25s ease;
+      }
+
+      .result-tab.active {
+        background: #1e293b;
+        border-color: #4c6ef5;
+        color: #a5b4fc;
+      }
+
+      .result-panel {
+        display: none;
+      }
+
+      .result-panel.active {
+        display: block;
+      }
+
+      .result-box {
+        background: rgba(22, 24, 36, 0.85);
+
+        border: 1px solid #2d3148;
+
+        border-radius: 12px;
+
+        padding: 20px;
+
+        font-size: 13px;
+
+        line-height: 1.8;
+
+        color: #cbd5e1;
+
+        max-height: 500px;
+
+        overflow-y: auto;
+
+        overflow-x: auto;
+
+        position: relative;
+
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      }
+      th {
+        background: #2d4d8f;
+        color: white;
+        padding: 12px;
+        text-align: left;
+        font-size: 13px;
+
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .result-box.code {
+        font-family: "Consolas", "Courier New", monospace;
+        color: #a5b4fc;
+        font-size: 12.5px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th {
+        background: #2d4d8f;
+        color: white;
+        padding: 12px;
+        text-align: left;
+        font-size: 13px;
+
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background-clip: padding-box;
+      }
+      thead {
+        position: sticky;
+        top: 0;
+      }
+
+      td {
+        padding: 12px;
+        border: 1px solid #2d3148;
+        vertical-align: top;
+        line-height: 1.6;
+        font-size: 13px;
+      }
+
+      tr:nth-child(even) {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .copy-btn {
+        margin-top: 12px;
+      }
+
+      .copy-btn:hover {
+        border-color: #4c6ef5;
+        color: #a5b4fc;
+      }
+
+      .spinner {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border: 2px solid #4c6ef5;
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+        vertical-align: middle;
+        margin-right: 6px;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .footer {
+        width: 100%;
+
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        padding: 20px 10px;
+
+        margin-top: 40px;
+
+        color: #7f8aa3;
+
+        font-size: 14px;
+
+        border-top: 1px solid #2d3148;
+      }
+
+      .theme-toggle {
+        position: fixed;
+
+        top: 24px;
+
+        right: 30px;
+
+        background: #161824;
+
+        color: white;
+
+        border: 1px solid #2d3148;
+
+        border-radius: 12px;
+
+        padding: 10px 18px;
+
+        cursor: pointer;
+
+        font-size: 14px;
+
+        transition: all 0.25s ease;
+
+        z-index: 9999;
+      }
+
+      .theme-toggle:hover {
+        border-color: #4c6ef5;
+
+        transform: translateY(-1px);
+      }
+
+      body.light-mode {
+        background: #f3f4f6;
+
+        color: #111827;
+      }
+
+      body.light-mode .card {
+        background: white;
+
+        border: 1px solid #d1d5db;
+      }
+
+      body.light-mode input,
+      body.light-mode textarea,
+      body.light-mode select {
+        background: white;
+
+        color: black;
+
+        border: 1px solid #cbd5e1;
+      }
+
+      body.light-mode .result-box {
+        background: white;
+
+        color: black;
+
+        border: 1px solid #d1d5db;
+      }
+
+      body.light-mode .task-card {
+        background: white;
+
+        border: 1px solid #d1d5db;
+      }
+
+      body.light-mode .task-card h3 {
+        color: #111827;
+      }
+
+      body.light-mode .task-card p {
+        color: #4b5563;
+      }
+      body.light-mode h1 {
+        color: #111827;
+      }
+
+      body.light-mode .subtitle {
+        color: #64748b;
+      }
+
+      body.light-mode .badges span {
+        background: white;
+
+        color: #111827;
+
+        border: 1px solid #cbd5e1;
+      }
+
+      .ai-loader {
+        display: none;
+
+        margin-top: 20px;
+
+        padding: 18px;
+
+        border-radius: 14px;
+
+        background: rgba(76, 110, 245, 0.08);
+
+        border: 1px solid rgba(76, 110, 245, 0.2);
+
+        text-align: center;
+      }
+
+      .loader-step {
+        font-size: 15px;
+
+        color: #cbd5e1;
+
+        animation: pulse 1.2s infinite;
+      }
+
+      body.light-mode .loader-step {
+        color: #334155;
+      }
+
+      @keyframes pulse {
+        0% {
+          opacity: 0.5;
+        }
+
+        50% {
+          opacity: 1;
+        }
+
+        100% {
+          opacity: 0.5;
+        }
+      }
+
+      .summary-grid {
+        display: grid;
+
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+
+        gap: 20px;
+        width: 100%;
+        margin-bottom: 24px;
+      }
+
+      .summary-card {
+        background: #161824;
+
+        border: 1px solid #2d3148;
+
+        border-radius: 16px;
+
+        padding: 20px;
+
+        text-align: center;
+
+        transition: all 0.25s ease;
+      }
+
+      .summary-card:hover {
+        transform: translateY(-2px);
+
+        border-color: #4c6ef5;
+      }
+
+      .summary-card h2 {
+        font-size: 32px;
+
+        margin-bottom: 8px;
+
+        color: #7c4dff;
+      }
+
+      .summary-card p {
+        color: #cbd5e1;
+
+        font-size: 14px;
+      }
+
+      body.light-mode .summary-card {
+        background: white;
+
+        border: 1px solid #d1d5db;
+      }
+
+      body.light-mode .summary-card p {
+        color: #475569;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>⚡ Loom ⚡</h1>
+
+      <p class="subtitle">
+        Give a URL or paste Acceptance Criteria. Generate AI powered manual test
+        cases and Playwright automation scripts instantly.
+      </p>
+
+      <div class="badges">
+        <span>AI Powered</span>
+        <span>Playwright</span>
+        <span>Automation</span>
+        <span>Manual Testing</span>
+      </div>
+
+      <button id="theme-toggle" class="theme-toggle">🌙 Dark</button>
+
+      <div class="card">
+        <label style="margin-top: 0px; display: block"> Select AI Task </label>
+
+        <div class="task-grid">
+          <div
+            class="task-card active"
+            onclick="selectTask(event, 'url', 'manual')"
+          >
+            <h3>🌐 URL → Manual</h3>
+
+            <p>Generate manual test cases from website</p>
+          </div>
+
+          <div
+            class="task-card"
+            onclick="selectTask(event, 'url', 'playwright')"
+          >
+            <h3>⚡ URL → Playwright</h3>
+
+            <p>Generate Playwright automation from website</p>
+          </div>
+
+          <div class="task-card" onclick="selectTask(event, 'ac', 'manual')">
+            <h3>📋 AC → Manual</h3>
+
+            <p>Generate manual test cases from acceptance criteria</p>
+          </div>
+
+          <div
+            class="task-card"
+            onclick="selectTask(event, 'ac', 'playwright')"
+          >
+            <h3>🤖 AC → Playwright</h3>
+
+            <p>Generate Playwright automation from acceptance criteria</p>
+          </div>
+        </div>
+        <div id="playwright-language-section" style="display: none">
+          <label>Playwright Language</label>
+
+          <div class="field-gap">
+            <select id="playwright-language">
+              <option value="JavaScript">JavaScript</option>
+
+              <option value="TypeScript">TypeScript</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="input-section active" id="url-section">
+          <label>Page URL</label>
+
+          <div class="field-gap">
+            <input
+              type="text"
+              id="url-input"
+              placeholder="https://example.com"
+            />
+          </div>
+
+          <label>Pages to Crawl</label>
+
+          <div class="field-gap">
+            <input
+              type="number"
+              id="crawl-limit"
+              placeholder="1"
+              value="1"
+              min="1"
+              max="20"
+            />
+          </div>
+
+          <label>AI Instructions</label>
+
+          <div class="field-gap">
+            <textarea
+              id="extra-prompt"
+              placeholder="Example:
+Focus on edge cases
+Include accessibility testing
+Generate Playwright TypeScript code"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="input-section" id="ac-section">
+          <label>Acceptance Criteria</label>
+
+          <div class="field-gap">
+            <textarea
+              id="ac-input"
+              placeholder="Example:
+- User should be able to login with valid email and password
+- On successful login, user should be redirected to dashboard
+- Invalid credentials should show an error message"
+            ></textarea>
+          </div>
+        </div>
+
+        <button class="generate-btn" id="generate-btn" onclick="generate()">
+          ⚡ Generate with AI
+        </button>
+
+        <div class="status" id="status"></div>
+        <div class="ai-loader" id="ai-loader">
+          <div class="loader-step" id="loader-step-text">
+            🔍 Crawling pages...
+          </div>
+        </div>
+      </div>
+
+      <div class="results" id="results">
+        <div class="summary-grid" id="summary-grid">
+          <div class="summary-card" onclick="showAllCases()">
+            <h2 id="total-count">0</h2>
+
+            <p>Total Cases</p>
+          </div>
+
+          <div class="summary-card" onclick="filterFunctionalCases()">
+            <h2 id="functional-count">0</h2>
+
+            <p>Functional</p>
+          </div>
+
+          <div class="summary-card" onclick="filterCases('negative')">
+            <h2 id="negative-count">0</h2>
+
+            <p>Negative</p>
+          </div>
+
+          <div class="summary-card" onclick="filterCases('edge')">
+            <h2 id="edge-count">0</h2>
+
+            <p>Edge</p>
+          </div>
+
+          <div class="summary-card" onclick="filterCases('accessibility')">
+            <h2 id="accessibility-count">0</h2>
+
+            <p>Accessibility</p>
+          </div>
+        </div>
+        <div class="result-panel" id="manual-panel">
+          <div class="result-box">
+            <table id="manual-table">
+              <thead>
+                <tr>
+                  <th>TC ID</th>
+                  <th>Test Case Name</th>
+                  <th>Action</th>
+                  <th>Expected Result</th>
+                  <th>Priority</th>
+                  <th>Scenario Type</th>
+                </tr>
+              </thead>
+
+              <tbody id="manual-output"></tbody>
+            </table>
+          </div>
+
+          <button class="copy-btn" onclick="exportExcel()">Export Excel</button>
+        </div>
+
+        <div class="result-panel" id="code-panel">
+          <pre class="result-box code">
+          <code id="code-output" class="language-javascript"></code>
+          </pre>
+
+          <button class="copy-btn" onclick="copyText('code-output')">
+            Copy Code
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>AI Powered QA Accelerator</p>
+      <p>Version 1.0</p>
+    </footer>
+
+    <script>
+      let currentMode = "url";
+
+      let outputType = "manual";
+      const aiSteps = [
+        "🔍 Crawling pages...",
+
+        "🧠 Understanding workflows...",
+
+        "🧪 Generating regression scenarios...",
+
+        "⚡ Building automation assets...",
+
+        "✅ Finalizing AI results...",
+      ];
+
+      let loaderInterval;
+
+      function selectTask(event, mode, type) {
+        currentMode = mode;
+
+        outputType = type;
+
+        // REMOVE ACTIVE FROM ALL CARDS
+        document.querySelectorAll(".task-card").forEach((card) => {
+          card.classList.remove("active");
+        });
+
+        // ACTIVATE CLICKED CARD
+        event.currentTarget.classList.add("active");
+
+        // HIDE ALL INPUT SECTIONS
+        document.querySelectorAll(".input-section").forEach((section) => {
+          section.classList.remove("active");
+        });
+
+        // SHOW CURRENT INPUT SECTION
+        const activeSection = document.getElementById(mode + "-section");
+
+        if (activeSection) {
+          activeSection.classList.add("active");
+        }
+
+        // PLAYWRIGHT LANGUAGE DROPDOWN
+        const langSection = document.getElementById(
+          "playwright-language-section",
+        );
+
+        if (langSection) {
+          if (type === "playwright") {
+            langSection.style.display = "block";
+          } else {
+            langSection.style.display = "none";
+          }
+        }
+      }
+
+      async function generate() {
+        const btn = document.getElementById("generate-btn");
+
+        const status = document.getElementById("status");
+
+        let body = {
+          mode: currentMode,
+
+          output_type: outputType,
+
+          playwright_language:
+            document.getElementById("playwright-language")?.value ||
+            "JavaScript",
+        };
+
+        // URL MODE
+        if (currentMode === "url") {
+          const url = document.getElementById("url-input").value.trim();
+
+          if (!url) {
+            setStatus("Please enter a URL.", "error");
+
+            return;
+          }
+
+          body.url = url;
+
+          body.crawl_limit = document
+            .getElementById("crawl-limit")
+            .value.trim();
+
+          body.extra_prompt = document
+            .getElementById("extra-prompt")
+            .value.trim();
+        } else {
+          // AC MODE
+          const ac = document.getElementById("ac-input").value.trim();
+
+          if (!ac) {
+            setStatus("Please enter acceptance criteria.", "error");
+
+            return;
+          }
+
+          body.ac_text = ac;
+        }
+
+        btn.disabled = true;
+
+        setStatus(
+          '<span class="spinner"></span> 🧠 AI generating...',
+          "loading",
+        );
+        const aiLoader = document.getElementById("ai-loader");
+
+        const loaderText = document.getElementById("loader-step-text");
+
+        aiLoader.style.display = "block";
+
+        let stepIndex = 0;
+
+        loaderText.innerHTML = aiSteps[0];
+
+        loaderInterval = setInterval(() => {
+          stepIndex++;
+
+          if (stepIndex >= aiSteps.length) {
+            stepIndex = 0;
+          }
+
+          loaderText.innerHTML = aiSteps[stepIndex];
+        }, 1500);
+
+        document.getElementById("results").classList.remove("visible");
+
+        try {
+          const res = await fetch(
+            "https://grumbling-illusion-yoyo.ngrok-free.dev/generate",
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type": "application/json",
+              },
+
+              body: JSON.stringify(body),
+            },
+          );
+
+          const data = await res.json();
+
+          if (!res.ok || data.error) {
+            setStatus("Error: " + (data.error || "Unknown error"), "error");
+          } else {
+            // MANUAL OUTPUT
+            if (outputType === "manual") {
+              document.getElementById("summary-grid").style.display = "grid";
+              document.getElementById("manual-panel").style.display = "block";
+
+              document.getElementById("code-panel").style.display = "none";
+
+              const tbody = document.getElementById("manual-output");
+
+              tbody.innerHTML = "";
+
+              window.generatedManualData = data.manual || [];
+              const manualData = data.manual || [];
+
+              document.getElementById("total-count").innerText =
+                manualData.length;
+
+              document.getElementById("negative-count").innerText =
+                manualData.filter((t) =>
+                  t.scenario_type?.toLowerCase().includes("negative"),
+                ).length;
+
+              document.getElementById("edge-count").innerText =
+                manualData.filter((t) =>
+                  t.scenario_type?.toLowerCase().includes("edge"),
+                ).length;
+
+              document.getElementById("accessibility-count").innerText =
+                manualData.filter((t) =>
+                  t.scenario_type?.toLowerCase().includes("accessibility"),
+                ).length;
+
+              document.getElementById("functional-count").innerText =
+                manualData.length -
+                (manualData.filter((t) =>
+                  t.scenario_type?.toLowerCase().includes("negative"),
+                ).length +
+                  manualData.filter((t) =>
+                    t.scenario_type?.toLowerCase().includes("edge"),
+                  ).length +
+                  manualData.filter((t) =>
+                    t.scenario_type?.toLowerCase().includes("accessibility"),
+                  ).length);
+
+              data.manual.forEach((tc) => {
+                const row = `
+<tr data-type="${tc.scenario_type}">
+<td>${tc.tc_id}</td>
+<td>${tc.test_case_name}</td>
+<td>${tc.action.join("<br>")}</td>
+<td>${tc.expected_result}</td>
+<td>${tc.priority}</td>
+<td>${tc.scenario_type}</td>
+</tr>
+`;
+
+                tbody.innerHTML += row;
+              });
+            } else {
+              // PLAYWRIGHT OUTPUT
+              document.getElementById("summary-grid").style.display = "none";
+              document.getElementById("manual-panel").style.display = "none";
+
+              document.getElementById("code-panel").style.display = "block";
+
+              document.getElementById("code-output").textContent =
+                data.code || "No code generated.";
+
+              hljs.highlightAll();
+            }
+
+            document.getElementById("results").classList.add("visible");
+
+            setStatus("✅ Generated successfully.", "success");
+          }
+        } catch (err) {
+          console.error(err);
+
+          setStatus("ERROR: " + err, "error");
+        } finally {
+          clearInterval(loaderInterval);
+
+          document.getElementById("ai-loader").style.display = "none";
+          btn.disabled = false;
+        }
+      }
+
+      function setStatus(msg, type) {
+        const el = document.getElementById("status");
+
+        el.innerHTML = msg;
+
+        el.className = "status " + type;
+      }
+
+      function copyText(id) {
+        const text = document.getElementById(id).textContent;
+
+        navigator.clipboard.writeText(text).then(() => {
+          alert("Copied to clipboard!");
+        });
+      }
+
+      async function exportExcel() {
+        try {
+          const response = await fetch("http://127.0.0.1:5000/export-excel", {
+            method: "POST",
+
+            headers: {
+              "Content-Type": "application/json",
+            },
+
+            body: JSON.stringify({
+              manual: window.generatedManualData || [],
+            }),
+          });
+
+          const blob = await response.blob();
+
+          const link = document.createElement("a");
+
+          link.href = window.URL.createObjectURL(blob);
+
+          link.download = "test_cases.xlsx";
+
+          link.click();
+        } catch (error) {
+          alert("Excel export failed");
+        }
+      }
+
+      const themeToggle = document.getElementById("theme-toggle");
+
+      themeToggle.addEventListener("click", () => {
+        document.body.classList.toggle("light-mode");
+
+        if (document.body.classList.contains("light-mode")) {
+          themeToggle.innerHTML = "☀️ Light";
+        } else {
+          themeToggle.innerHTML = "🌙 Dark";
+        }
+      });
+
+      function filterCases(type) {
+        const rows = document.querySelectorAll("tbody tr");
+
+        rows.forEach((row) => {
+          if (row.dataset.type.toLowerCase().includes(type)) {
+            row.style.display = "";
+          } else {
+            row.style.display = "none";
+          }
+        });
+      }
+
+      function filterFunctionalCases() {
+        const rows = document.querySelectorAll("tbody tr");
+
+        rows.forEach((row) => {
+          const type = row.dataset.type.toLowerCase();
+
+          if (
+            !type.includes("negative") &&
+            !type.includes("edge") &&
+            !type.includes("accessibility")
+          ) {
+            row.style.display = "";
+          } else {
+            row.style.display = "none";
+          }
+        });
+      }
+
+      function showAllCases() {
+        const rows = document.querySelectorAll("tbody tr");
+
+        rows.forEach((row) => {
+          row.style.display = "";
+        });
+      }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  </body>
+</html>
